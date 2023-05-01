@@ -37,14 +37,14 @@ export default function Home({propertyList, homesDetails}) {
 
 export async function getStaticProps() {
     const response2 = await axios.get(
-        'http://localhost:3001/api/hotels'
+        'http://localhost:3001/api/rooms'
     );
     // const response3 = await axios.get(
     //     'https://rooms-backend.onrender.com/api/hotels?featured=true&limit=4'
     // );
     // const res = await axios.get('https://rooms-backend.onrender.com/api/blogs');
 
-    const data2 = await response2.data.data.rows;
+    const data2 = await response2.data.data;
     // const data3 = await response3.data.message;
     // const blog = res.data.message;
 

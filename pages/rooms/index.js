@@ -149,7 +149,7 @@ const index = ({ hotelList }) => {
 
                 <div className={style.hotels_page_result}>
                     {hotelData?.map((results_item) => (
-                        <SearchItem results={results_item} key={results_item?.hotel_id} />
+                        <SearchItem results={results_item} key={results_item?.room_id} />
                     ))}
                 </div>
             </div>
@@ -164,8 +164,8 @@ export default index;
 
 // fetch the data using getStaticProps
 export async function getStaticProps() {
-    const response = await axios.get('http://localhost:3001/api/hotels')
-    const data = await response.data.data.rows
+    const response = await axios.get('http://localhost:3001/api/rooms')
+    const data = await response.data.data
 
     return {
         props: { hotelList: data }
