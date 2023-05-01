@@ -1,54 +1,48 @@
 .order_page {
-  max-width: 1071px;
-  margin: 0 auto;
-  margin-top: 50px;
+    max-width: 1071px;
+    margin: 0 auto;
+    margin-top: 50px;
 }
 
 .hotel_room_table {
-  margin-top: 50px;
-  max-width: 1071px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-bottom: 50px;
-  tr,
-  td {
-    border: 2px solid #4c76b2;
-  }
-  tr,
-  td:nth-child(1),
-  th:nth-last-child(1) {
-    border-left: 0;
-    border-right: 0;
-  }
-  thead th,
-  thead td {
-    text-align: center;
-    font-weight: bold;
-    color: white;
-    background-color: #4c76b2;
-    border-left: 1px solid #5bbaff;
-  }
-  td:not(:first-child):not(:nth-child(5)):not(:nth-child(7)) {
-    text-align: center;
-  }
+    margin-top: 50px;
+    max-width: 1071px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 50px;
+    tr,
+    td {
+        border: 2px solid #4c76b2;
+    }
+    thead th,
+    thead td {
+        text-align: center;
+        font-weight: bold;
+        color: white;
+        background-color: #4c76b2;
+        border-left: 1px solid #5bbaff;
+    }
+    td:not(:first-child):not(:nth-child(5)):not(:nth-child(7)) {
+        text-align: center;
+    }
 }
 
 .reverse_button {
-  margin-top: 20px;
-  padding: 10px 10px;
-  cursor: pointer;
-  border-radius: 5px;
-  background: none;
-  border: none;
-  text-transform: capitalize;
-  letter-spacing: 1px;
-  font-weight: bold;
-  color: white;
-  transition: all 0.3s ease;
-  width: 100%;
-  background-color: #2155cd;
-  text-align: center;
-  font-size: 15px;
+    margin-top: 20px;
+    padding: 10px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    background: none;
+    border: none;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: white;
+    transition: all 0.3s ease;
+    width: 100%;
+    background-color: #2155cd;
+    text-align: center;
+    font-size: 15px;
 }

@@ -7,9 +7,11 @@ function LovelyHomeDetail({ homesDetails }) {
         <div className={style.LovelyHome_detail}>
             <h2>Khách sạn nổi bật</h2>
             <div className={style.LovelyHome_detail_main}>
-                {homesDetails?.map((details, i) => (
-                    <LovelyHome hmDetails={details} key={i} />
-                ))}
+                {homesDetails?.map((details, i) => {
+                        if (i < 4) return <LovelyHome hmDetails={details} key={i} />
+                        else return null;
+                    }
+                )}
             </div>
         </div>
     );

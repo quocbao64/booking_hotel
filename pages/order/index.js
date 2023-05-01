@@ -6,18 +6,16 @@ import Footer from "../../components/Footer/Footer";
 import Navbar from "../../components/Navbar/Navbar";
 import style from "../../styles/order.module.scss";
 
-const index = ({hotels, rooms, invoices}) => {
+const index = ({rooms, invoices}) => {
 
     const dataForTable = invoices.map(e => {
-        const hotel = hotels?.find(item => item.hotel_id === e.hotel_id)
         const room = rooms?.find(item => item.room_id === e.room_id);
         return {
             info: {
-                hotel_id: hotel?.hotel_id,
-                hotel_name: hotel?.hotel_name,
-                hotel_img: hotel?.hotel_img,
-                hotel_phone: hotel?.hotel_phone,
-                room_name: room?.room_name
+                room_id: room?.room_id,
+                room_name: room?.room_name,
+                room_beds: room.room_beds,
+                room_desc: room.room_desc
             },
             quantity: e.room_quantity,
             price: e.price,
@@ -39,14 +37,12 @@ const index = ({hotels, rooms, invoices}) => {
             render: (value) => (
                 <div style={{padding: "16px"}}>
                     <div>
-                        <a href={`/hotels/${value.hotel_id}`} style={{color: "blue", fontSize: "20px", textDecoration: 'none'}}>{value.hotel_name}</a>
+                        <a href={`/rooms/${value.room_id}`} style={{color: "blue", fontSize: "20px", textDecoration: 'none'}}>{value.room_name}</a>
+                        <br/>
+                        <span style={{fontWeight: 500}}>{value.room_desc}</span>
                         <div style={{display: "flex"}}>
-                            <div>Số điện thoại: </div>
-                            <div style={{marginLeft: "16px", fontWeight: 700}}>{value.hotel_phone}</div>
-                        </div>
-                        <div style={{display: "flex"}}>
-                            <div>Số phòng: </div>
-                            <div style={{marginLeft: "16px", fontWeight: 700}}>{value.room_name}</div>
+                            <div>Số giường: </div>
+                            <div style={{marginLeft: "16px", fontWeight: 700}}>{value.room_beds}</div>
                         </div>
                     </div>
                 </div>
@@ -56,13 +52,13 @@ const index = ({hotels, rooms, invoices}) => {
             title: 'Số lượng phòng',
             dataIndex: 'quantity',
             key: 'quantity',
-            width: 70
+            width: 150
         },
         {
             title: 'Giá phòng',
             dataIndex: 'price',
             key: 'price',
-            width: 200,
+            width: 250,
             render: (value) => (
                 <div>
                     <span style={{fontSize: "20px", fontWeight: 700, lineHeight: "24px"}}>
@@ -78,7 +74,7 @@ const index = ({hotels, rooms, invoices}) => {
             title: 'Ngày thuê',
             dataIndex: 'dayBook',
             key: 'dayBook',
-            width: 200,
+            width: 250,
             render: (value) => (
                 <div style={{textAlign: "center"}}>
                     <div style={{display: "flex", justifyContent: "center"}}>
@@ -101,23 +97,13 @@ const index = ({hotels, rooms, invoices}) => {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
-            width: 100,
+            width: 200,
             render: (value) => (
                 <div style={{textAlign: "center"}}>
                     {value === "booked" ? "Đã đặt" :
                     value === "inprogress" ? "Đang ở" : "Đã thanh toán"}
                 </div>
             )
-        },
-        {
-            title: '',
-            key: "info",
-            width: 200,
-            render: (value) => {
-                return <div style={{margin: "0 5px"}}>
-                    <button className={style.reverse_button} onClick={() => handleReverseSubmit(value)}>Hủy phòng</button>
-                </div>
-            },
         },
     ];
 
@@ -132,6 +118,11 @@ const index = ({hotels, rooms, invoices}) => {
                             <div style={{display: "flex", alignItems: "center", marginBottom: "5px"}}>
                                 <FaRegCheckCircle style={{marginRight: "16px", fontSize: "20px", color: "#008009"}} />
                                 Bạn có thể hủy miễn phí cho đến ngày 21 tháng 5 năm 2023, vì vậy hãy giữ mức giá tuyệt vời này ngay hôm nay.
+                            </div>
+                            <div style={{display: "flex", alignItems: "center", marginBottom: "5px"}}>
+                                <FaRegCheckCircle style={{marginRight: "16px", fontSize: "20px", color: "#008009"}} />
+                                Bạn chỉ có thể hủy đặt phòng bằng cách gọi cho chúng tôi theo số: 
+                                <strong>&nbsp;0345672312</strong>
                             </div>
                             <div style={{display: "flex", alignItems: "center"}}>
                                 <FaRegCheckCircle style={{marginRight: "16px", fontSize: "20px", color: "#008009"}} />
@@ -149,16 +140,13 @@ const index = ({hotels, rooms, invoices}) => {
 export default index;
 
 export async function getStaticProps() {
-    const response = await axios.get('http://localhost:3001/api/hotels')
     const response2 = await axios.get('http://localhost:3001/api/rooms')
     const response3 = await axios.get('http://localhost:3001/api/invoices')
-    const data = await response.data.data.rows
     const data2 = await response2.data.data
     const data3 = await response3.data.data
 
     return {
         props: { 
-            hotels: data, 
             rooms: data2, 
             invoices: data3 
         }

@@ -11,14 +11,14 @@ import 'swiper/css/pagination';
 // import required modules
 import axios from 'axios';
 import { addDays, format } from 'date-fns';
-import Table from "rc-table";
-import { useContext, useRef, useState } from 'react';
+import Table from 'rc-table';
+import { useContext, useState } from 'react';
 import Modal from "react-bootstrap/Modal";
 import { DateRange } from "react-date-range";
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-import { FaBed, FaCalendarAlt, FaCheck, FaHome, FaNewspaper } from 'react-icons/fa';
-import { MdFastfood, MdLocalHotel, MdLocalTaxi, MdMapsHomeWork } from 'react-icons/md';
+import { FaBed, FaCalendarAlt, FaCheck } from 'react-icons/fa';
+import { MdFastfood } from 'react-icons/md';
 import Swal from 'sweetalert2';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Footer from '../../components/Footer/Footer';
@@ -34,12 +34,12 @@ import noPhoto from '../../images/no hotel.jpg';
 import style from '../../styles/hotelDetail.module.scss';
 import styles from '../../styles/login.module.scss';
 
-const hotelDetails = ({ hotel, rooms }) => {
+const hotelDetails = ({ rooms }) => {
     const { options } = useContext(Context);
     const { user, dispatch, loading } = useContext(Contexts);
     const [sliderNum, setSliderNum] = useState(0);
     const [open, setOpen] = useState(false);
-    const [image, setImage] = useState(hotel.hotel_slide.split(',') || [])
+    const [image, setImage] = useState(rooms.room_imgs.split(',') || [])
     
 
     const details = {
@@ -61,44 +61,6 @@ const hotelDetails = ({ hotel, rooms }) => {
         const differenceDays = Math.ceil(timeDiference / MILISEC_PER_DAY);
         return differenceDays === 0 ? 1 : differenceDays;
     }
-
-    const menus = [
-        {
-            id: 1,
-            icon: <FaHome className={style.icon} />,
-            txt: 'Home',
-            isActive: false,
-            href: '/',
-        },
-        {
-            id: 2,
-            icon: <MdMapsHomeWork className={style.icon} />,
-            txt: 'Hotels',
-            isActive: false,
-            href: '/hotels',
-        },
-        {
-            id: 3,
-            icon: <FaNewspaper className={style.icon} />,
-            txt: 'Blogs',
-            isActive: false,
-            href: '/blogs',
-        },
-        {
-            id: 4,
-            icon: <MdLocalHotel className={style.icon} />,
-            txt: 'Resorts',
-            isActive: false,
-            href: '/',
-        },
-        {
-            id: 5,
-            icon: <MdLocalTaxi className={style.icon} />,
-            txt: 'Test',
-            isActive: false,
-            href: '/testpage',
-        },
-    ];
 
     const [inpval, setInpval] = useState({
         email: '',
@@ -345,16 +307,8 @@ const hotelDetails = ({ hotel, rooms }) => {
                 title: 'Bạn phải chọn phòng!',
             });
         }
-        const listRoom = []
-        countChalet.forEach(e => {
-            const item = rooms?.find(i => i.room_id === e.id)
-            if (item) {
-                listRoom.push(item)
-            }
-        })
         localStorage.setItem("order", JSON.stringify(countChalet))
-        localStorage.setItem("hotel", JSON.stringify(hotel))
-        localStorage.setItem("rooms", JSON.stringify(listRoom))
+        localStorage.setItem("rooms", JSON.stringify(rooms))
         localStorage.setItem('dates', JSON.stringify(dates))
     }
 
@@ -439,21 +393,19 @@ const hotelDetails = ({ hotel, rooms }) => {
             title: '',
             key: "info",
             width: 200,
-            onCell: (_, index) => ({ rowSpan: index % rooms.length === 0 ? rooms.length : 0 }),
             render: (value) => {
                 const count = countChalet.reduce((acc, obj) => acc + obj.quantity, 0);
                 const totalBill = 0;
                 countChalet.forEach(e => {
-                    let room = rooms.find(room => room.room_id === e.id);
                     if (e.quantity !== 0) {
-                        totalBill += parseInt(room?.room_price);
+                        totalBill += parseInt(rooms?.room_price);
                     } 
                     else {
-                        totalBill -= parseInt(room?.room_price);
+                        totalBill -= parseInt(rooms?.room_price);
                         count--;
                     }
                 })
-                return <div style={{margin: "0 5px"}}>
+                return <div style={{margin: "5px"}}>
                     {count > 0 ? (
                         <div>
                             <span>Tổng tiền:</span>
@@ -471,29 +423,27 @@ const hotelDetails = ({ hotel, rooms }) => {
         },
     ];
 
-    const dataForTable = rooms
-    const data = dataForTable.map(e => ({
+    const data = [{
         info: {
-            room_name: e.room_name,
-            room_area: e.room_area,
-            room_desc: e.room_desc,
-            room_beds: e.room_beds,
-            room_quantity: e.room_quantity,
-            room_surcharge: e.room_surcharge,
+            room_name: rooms.room_name,
+            room_area: rooms.room_area,
+            room_desc: rooms.room_desc,
+            room_beds: rooms.room_beds,
+            room_quantity: rooms.room_quantity,
+            room_surcharge: rooms.room_surcharge,
         },
-        numPeople: e.room_num_people,
-        price: e.room_price,
-        surcharge: e.room_surcharge,
+        numPeople: rooms.room_num_people,
+        price: rooms.room_price,
+        surcharge: rooms.room_surcharge,
         chalet: {
-            id: e.room_id,
-            quantity: e.room_quantity
+            id: rooms.room_id,
+            quantity: rooms.room_quantity
         }
-    }))
-
-    const targetRef = useRef(null);
+    }]
 
     function scrollToTarget() {
-        targetRef.current.scrollIntoView({ behavior: 'smooth' });
+        const id = document.getElementById("table-room")
+        id.scrollIntoView({ behavior: 'smooth' });
     }
 
     return (
@@ -504,7 +454,7 @@ const hotelDetails = ({ hotel, rooms }) => {
             {/* hotel details */}
             <div className={style.hotel_detail_main}>
                 <div className={style.hotel_detail_left}>
-                    <h1>{hotel.hotel_name}</h1>
+                    <h1>{rooms.room_name}</h1>
                     <Swiper
                         effect="fade"
                         navigation
@@ -547,7 +497,7 @@ const hotelDetails = ({ hotel, rooms }) => {
                         </p>
                     </div>
                     <div className={style.hotel_detail_desc}>
-                        <p>{hotel.hotel_desc}</p>
+                        <p>{rooms.room_desc}</p>
                     </div>
 
                     <h2>Tiện nghi</h2>
@@ -568,8 +518,8 @@ const hotelDetails = ({ hotel, rooms }) => {
                         modules={[EffectCards]}
                         className={style.mySwiper}
                     >
-                        {hotel.hotel_slide.split(',').length > 0 ? (
-                            hotel.hotel_slide.split(',').slice(1).map((imgs, i) => (
+                        {image.length > 0 ? (
+                            image.map((imgs, i) => (
                                 <SwiperSlide
                                     className={style.swiper_slide2}
                                     style={{ position: 'relative' }}
@@ -606,17 +556,17 @@ const hotelDetails = ({ hotel, rooms }) => {
                     <div className={style.hotel_detail_booking}>
                         <h3>Hoàn hảo cho 1 ngày ở lại!</h3>
                         <p>
-                            Khách sạn này được đánh giá rất tốt với <b>{hotel.hotel_star} sao</b>.
+                            Khách sạn này được đánh giá rất tốt với <b>{5} sao</b>.
                         </p>
 
                         {user ? (
-                            <button type="button" >
-                                Reserve or Book now
+                            <button type="button" onClick={scrollToTarget}>
+                                Đặt phòng ngay
                             </button>
                         ) : (
                             <>
                                 <button type="button" onClick={openLoginModal}>
-                                    Reserve or Book now
+                                    Đặt phòng ngay
                                 </button>
                                 <Modal show={isLoginModalOpen} onHide={closeLoginModal} fade={false}>
                                     <Modal.Header closeButton>
@@ -758,7 +708,7 @@ const hotelDetails = ({ hotel, rooms }) => {
                 </div>
                 <hr />
             </div>
-            {open && <Reserve setOpen={setOpen} hotelId={hotel.hotel_id} rooms={rooms} />}
+            {open && <Reserve setOpen={setOpen} hotelId={rooms.room_id} rooms={rooms} />}
             <div className={styleSearch.header}>
                 <div className={styleSearch.header_main} style={{paddingLeft: 0, paddingRight: 0}}>
                     <div className={styleSearch.header_search} style={{margin: "0 10px", maxWidth: "1204px"}}>
@@ -782,7 +732,7 @@ const hotelDetails = ({ hotel, rooms }) => {
                     </div>
                 </div>
             </div>
-            <Table className={style.hotel_room_table} columns={columns} data={data} />
+            <Table id="table-room" className={style.hotel_room_table} columns={columns} data={data} />
             <Newsletter />
             <Footer />
         </div>
@@ -792,25 +742,22 @@ const hotelDetails = ({ hotel, rooms }) => {
 export default hotelDetails;
 
 export async function getStaticPaths() {
-    const res = await axios.get('http://localhost:3001/api/hotels');
-    const hotels = await res.data.data.rows;
+    const res = await axios.get('http://localhost:3001/api/rooms');
+    const hotels = await res.data.data;
 
     const paths = hotels.map((hotel) => ({
-        params: { hotel: hotel.hotel_id.toString() },
+        params: { room: hotel.room_id.toString() },
     }));
 
     return { paths, fallback: false };
 }
 
 export async function getStaticProps({ params }) {
-    const res = await axios.get(`http://localhost:3001/api/hotels/${params.hotel}`);
-    const res2 = await axios.get(`http://localhost:3001/api/hotels/${params.hotel}/rooms`);
-    const hotel = await res.data.data;
+    const res2 = await axios.get(`http://localhost:3001/api/rooms/${params.room}`);
     const rooms = await res2.data.data;
 
     return {
         props: {
-            hotel,
             rooms
         },
     };

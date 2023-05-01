@@ -15,10 +15,10 @@ import styles from '../../styles/invoice.module.scss';
 
 const index = ({}) => {
     const order = JSON.parse(localStorage.getItem('order'))
-    const hotel = JSON.parse(localStorage.getItem("hotel"))
-    const rooms = JSON.parse(localStorage.getItem("rooms"))
+    const room = JSON.parse(localStorage.getItem("rooms"))
     const dates = JSON.parse(localStorage.getItem('dates'))
     const user = JSON.parse(localStorage.getItem('user'))
+    const imgs = room?.room_imgs.split(',') || [];
 
     const totalDays = differenceInDays(
         new Date(dates[0]?.endDate),
@@ -26,9 +26,7 @@ const index = ({}) => {
     );
 
 
-    const originalPrice = rooms?.reduce((total, item) => {
-        return total + parseInt(item?.room_price)
-    }, 0)
+    const originalPrice = parseInt(room.room_price)
 
     const Toast = Swal.mixin({
         toast: true,
@@ -47,12 +45,11 @@ const index = ({}) => {
     const handleSubmit = async () => {
         const params = {
             "price": originalPrice,
-            "hotel_id": hotel.hotel_id,
             "user_uuid": user.user.user_uuid,
             "r_date": format(new Date(dates[0].startDate), "yyyy-MM-dd"),
             "p_date": format(new Date(dates[0].endDate), "yyyy-MM-dd"),
-            "room_id": rooms[0].room_id,
-            "room_quantity": order?.find(e => e.id === rooms[0].room_id).quantity,
+            "room_id": room.room_id,
+            "room_quantity": order?.find(e => e.id === room.room_id).quantity,
             "status" : "booked"
         }
         const res = await axios.post("http://localhost:3000/invoices", params, {
@@ -60,8 +57,6 @@ const index = ({}) => {
                 'Authorization': 'Bearer ' + user.token
             }
         })
-        console.log(dates);
-        console.log(params);
         if (res.data.message === "success") {
             Toast.fire({
                 icon: 'success',
@@ -109,7 +104,7 @@ const index = ({}) => {
                         </div>
                         <div style={{ padding: "16px 0" }}>
                             <div style={{fontWeight: "700"}}>Lựa chọn của bạn:</div>
-                            {rooms.map((e, i) => <div key={i}>Phòng {e?.room_name}</div>)}
+                            <div>Phòng {room?.room_name}</div>
                         </div>
                     </div>
                     <div  className={styles.hotels_page_search}>
@@ -151,25 +146,24 @@ const index = ({}) => {
 
                 <div className={styles.hotels_page_result}>
                     <div className={style.search_item} style={{backgroundColor: "white", border: "1px solid #e7e7e7", marginTop: 0}}>
-                        <Link href={`/hotels/${hotel?.hotel_id}`}>
+                        <Link href={`/rooms/${room?.room_id}`}>
                             <div className={style.search_item_img} style={{ position: 'relative' }}>
-                                <Image src={hotel?.hotel_img !== null ? hotel?.hotel_img : noPhoto} height={160} width={170} layout="responsive" alt="Hotels"  />
+                                <Image src={imgs.length > 0  ? imgs[0] : noPhoto} height={160} width={170} layout="responsive" alt="Hotels"  />
                             </div>
                         </Link>
 
                         <div className={style.search_item_details}>
-                            <Link href={`/hotels/${hotel?.hotel_id}`}>
-                                <h3>{hotel?.hotel_name}</h3>
+                            <Link href={`/rooms/${room?.room_id}`}>
+                                <h3>{room?.room_name}</h3>
                             </Link>
-                            <p>{hotel?.hotel_address}</p>
-                            <p>{hotel?.hotel_phone}</p>
-                            <p >{hotel?.hotel_desc}</p>
+                            <p>{room?.room_desc}</p>
+                            <p >Số giường:  <span style={{fontWeight: 500}}>{room?.room_beds}</span></p>
                         </div>
 
                         <div className={style.search_item_pricing}>
                             <div className={style.search_item_priceing_rating}>
                                 <p className={style.priceing_rating} style={{marginBottom: 0}}>Đánh giá</p>
-                                <span>{hotel?.hotel_star}</span>
+                                <span>{5}</span>
                             </div>
                         </div>
                     </div>

@@ -17,8 +17,8 @@ const footer_detail1 = [
     },
     {
         id: 3,
-        link: 'Danh sách khách sạn',
-        to: '/hotels',
+        link: 'Danh sách phòng',
+        to: '/rooms',
     },
 ];
 

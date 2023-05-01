@@ -26,9 +26,9 @@ function Navbar() {
         {
             id: 2,
             icon: <MdMapsHomeWork className={style.icon} />,
-            txt: 'Danh sách khách sạn',
+            txt: 'Danh sách phòng',
             isActive: false,
-            href: '/hotels',
+            href: '/rooms',
         },
     ];
 
