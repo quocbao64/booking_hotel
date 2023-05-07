@@ -3,7 +3,7 @@ import Link from 'next/link';
 import React, { useContext, useState } from 'react';
 import Modal from "react-bootstrap/Modal";
 import { FaGripLines, FaHome, FaTimes } from 'react-icons/fa';
-import { MdLocalHotel, MdMapsHomeWork } from 'react-icons/md';
+import { MdLocalHotel, MdMapsHomeWork, MdSupervisedUserCircle } from 'react-icons/md';
 import Swal from 'sweetalert2';
 import Input from '../../components/Input/Input';
 import { Contexts } from '../../ContextUser/Contexts';
@@ -29,7 +29,13 @@ function Navbar() {
             txt: 'Danh sách phòng',
             isActive: false,
             href: '/rooms',
-        },
+        }, {
+            id: 3,
+            icon: <MdSupervisedUserCircle className={style.icon} />,
+            txt: 'Về chúng tôi',
+            isActive: false,
+            href: '/about',
+        }
     ];
 
     user && (

@@ -11,11 +11,6 @@ const footer_detail1 = [
         to: '/',
     },
     {
-        id: 2,
-        link: 'Về chúng tôi',
-        to: '/about',
-    },
-    {
         id: 3,
         link: 'Danh sách phòng',
         to: '/rooms',
@@ -29,11 +24,6 @@ const footer_detail2 = [
         to: '/about',
     },
     {
-        id: 2,
-        link: 'Dịch vụ',
-        to: '/service',
-    },
-    {
         id: 3,
         link: 'Liên hệ',
         to: '/contact',
@@ -44,11 +34,6 @@ const footer_detail3 = [
     {
         id: 1,
         link: 'Liên hệ',
-        to: '/contact',
-    },
-    {
-        id: 2,
-        link: 'Địa chỉ',
         to: '/contact',
     },
     {

@@ -1,0 +1,32 @@
+.about_page {
+    .about_page_top {
+        width: 100%;
+        max-width: 1224px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-top: -120px;
+        margin-bottom: 50px;
+        display: grid;
+        grid-template-columns: 20% 78%;
+        grid-gap: 25px;
+        justify-content: center;
+    }
+    .about_page_bottom {
+        max-width: 800px;
+        margin: auto;
+        margin-bottom: 30px;
+        .content {
+            display: grid;
+            grid-template-columns: 35% 62%;
+            grid-gap: 25px;
+            h4 {
+                margin-bottom: 30px;
+                font-size: 24px;
+                padding: 0;
+                font-weight: 500;
+            }
+        }
+    }
+}

@@ -77,7 +77,6 @@ const index = ({ hotelList }) => {
                             onChange={(e) => setCity(e.target.value)}
                         />
                     </div>
-
                     <div className={style.search_item}>
                         <label>Ngày nhận phòng</label>
                         <span
