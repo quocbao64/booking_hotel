@@ -1,7 +1,7 @@
 ## Getting Started
 First, download package used:
 ```bash
-npm install
+npm ci
 ```
 
 Then run the development server:
