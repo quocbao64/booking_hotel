@@ -6,7 +6,7 @@ import noPhoto from '../../images/no hotel.jpg';
 import style from './searchitem.module.scss';
 
 function SearchItem({ results }) {
-    const imgs = results.room_imgs.split(',') || [];
+    const imgs = results.room_imgs?.split(',') || [];
     console.log(results);
     return (
         <div className={style.search_item}>

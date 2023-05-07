@@ -1,15 +1,22 @@
 html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    padding: 0;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+        Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 * {
-  box-sizing: border-box;
-  scroll-behavior: smooth;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
 }
 
+.nav-item:hover {
+    background-color: #e7e4e4;
+}
+
+.nav-item.active {
+    background-color: #e7e4e4;
+}
 /* #e8f9fd */
 /* #2155cd */
