@@ -14,7 +14,7 @@ function PageNotFound() {
                     width={250}
                     alt="Not found page"
                 />
-                <h1>404 page not found.</h1>
+                <h1>404 Không tìm thấy trang.</h1>
             </div>
         </div>
     );

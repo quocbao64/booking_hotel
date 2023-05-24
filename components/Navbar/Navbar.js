@@ -1,12 +1,15 @@
 import axios from 'axios';
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { useContext, useState } from 'react';
+import Dropdown from 'react-bootstrap/Dropdown';
 import Modal from "react-bootstrap/Modal";
 import { FaGripLines, FaHome, FaTimes } from 'react-icons/fa';
-import { MdLocalHotel, MdMapsHomeWork, MdOutlineContactSupport, MdSupervisedUserCircle } from 'react-icons/md';
+import { MdMapsHomeWork, MdOutlineContactSupport } from 'react-icons/md';
 import Swal from 'sweetalert2';
 import Input from '../../components/Input/Input';
 import { Contexts } from '../../ContextUser/Contexts';
+import logo from "../../images/logo.png";
 import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import styles from '../../styles/login.module.scss';
 import style from './Navbar.module.scss';
@@ -29,13 +32,6 @@ function Navbar() {
             txt: 'Danh sách phòng',
             isActive: false,
             href: '/rooms',
-        }, 
-        {
-            id: 3,
-            icon: <MdSupervisedUserCircle className={style.icon} />,
-            txt: 'Về chúng tôi',
-            isActive: false,
-            href: '/about',
         },
         {
             id: 4,
@@ -68,7 +64,7 @@ function Navbar() {
         confirm_password: '',
         phone_number: ''
     });
-    const [err, setErr] = useState(false);
+    const [err, setErr] = useState(null);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
     const openLoginModal = () => {
@@ -178,56 +174,51 @@ function Navbar() {
         e.preventDefault();
         dispatch({ type: 'LOGIN_START' });
 
-        try {
-            const res = await axios.post(
+            await axios.post(
                 'http://localhost:3000/login',
                 {
                     user_email: inpval['email'],
                     user_password: inpval['password']
                 }
-            );
-            if (res.data.data.code === 1) {
-                return Toast.fire({
-                    icon: 'error',
-                    title: res.data.data.msg,
-                });
-            }
+            ).then(res => {
             dispatch({ type: 'LOGIN_SUCCESS', payload: res.data.data });
 
             Toast.fire({
                 icon: 'success',
                 title: 'Đăng nhập thành công',
+                position: "top"
             });
-        } catch (error) {
-            dispatch({ type: 'LOGIN_FAILURE' });
-            setErr(true);
-        }
+            window.location.reload()
+        }).catch(err => {
+            setErr(err.response.data.msg)
+            dispatch({type: 'LOGIN_FAILURE'})
+        })
     };
 
     const handleRegisSubmit = async e => {
         e.preventDefault();
 
-        try {
-            const res = await axios.post(
-                'http://localhost:3000/register',
-                {
-                    user_email: regisInpval['email'],
-                    user_password: regisInpval['password'],
-                    user_name: regisInpval['username'],
-                    confirm_password: regisInpval['confirm_password'],
-                    user_phone: regisInpval['phone_number'],
-                }
-            );
-
+        await axios.post(
+            'http://localhost:3000/register',
+            {
+                user_email: regisInpval['email'],
+                user_password: regisInpval['password'],
+                user_name: regisInpval['username'],
+                confirm_password: regisInpval['confirm_password'],
+                user_phone: regisInpval['phone_number'],
+            }
+        ).then(re => {
             Toast.fire({
                 icon: 'success',
                 title: 'Đăng ký thành công.',
+                position: "top"
             });
             closeRegisterModal()
             openLoginModal()
-        } catch (error) {
-            setErr(true);
-        }
+        }).catch(err => {
+            console.log(err);
+            setErr(err.response.data)
+        })
     }
 
     const handleToggle = () => {
@@ -243,9 +234,7 @@ function Navbar() {
             <div className={style.navbar_main}>
                 <Link href="/">
                     <div className={style.nav_brand}>
-                        <h2>
-                            <MdLocalHotel size={30} style={{ marginRight: '5px' }} /> Rooms
-                        </h2>
+                        <Image width={120} height={60} src={logo} objectFit='contain' />
                     </div>
                 </Link>
 
@@ -264,9 +253,26 @@ function Navbar() {
 
                 <div className={style.registration}>
                     {user ? (
-                        <button className={style.reg_btn} type="button" onClick={handleLogOut}>
-                            Đăng xuất
-                        </button>
+                        <>
+                            <Dropdown>
+                                <Dropdown.Toggle 
+                                    variant="success" 
+                                    className={style.dropdown_img}>
+                                    <Image 
+                                        width={40} 
+                                        height={40} 
+                                        objectFit="cover"
+                                        style={{ borderRadius: "50%" }} 
+                                        src={user.user.user_img !== null ? user.user.user_img : "https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"} 
+                                    />
+                                </Dropdown.Toggle>
+
+                                <Dropdown.Menu>
+                                    <Dropdown.Item href="/profile">Thông tin cá nhân</Dropdown.Item>
+                                    <Dropdown.Item onClick={handleLogOut}>Đăng xuất</Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </>
                     ) : (
                         <>
                             <button className={style.reg_btn} onClick={openLoginModal}>Đăng nhập</button>
@@ -286,13 +292,15 @@ function Navbar() {
                                                             key={inpLoginDetail.id}
                                                             value={inpval[inpLoginDetail.name]}
                                                             onChange={handleChng}
+                                                            onInvalid={F => F.target.setCustomValidity('Không được bỏ trống')} 
+                                                            onInput={F => F.target.setCustomValidity('')} 
                                                         />
                                                     </div>
                                                 ))}
 
                                                 {err && (
                                                     <p style={{ color: 'red', marginBottom: '0px' }}>
-                                                        Xác thực thất bại!
+                                                        {err}
                                                     </p>
                                                 )}
                                                 <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "20px"}}>
@@ -334,6 +342,8 @@ function Navbar() {
                                                         key={inpRegisterDetail[1].id}
                                                         value={regisInpval[inpRegisterDetail[1].name]}
                                                         onChange={handleRegisChng}
+                                                        onInvalid={F => F.target.setCustomValidity('Không được bỏ trống')} 
+                                                        onInput={F => F.target.setCustomValidity('')} 
                                                     />
                                                 </div>
                                                 <div style={{display: "flex", justifyContent: "space-between"}}>
@@ -344,6 +354,8 @@ function Navbar() {
                                                             key={inpRegisterDetail[0].id}
                                                             value={regisInpval[inpRegisterDetail[0].name]}
                                                             onChange={handleRegisChng}
+                                                            onInvalid={F => F.target.setCustomValidity('Không được bỏ trống')} 
+                                                            onInput={F => F.target.setCustomValidity('')} 
                                                         />
                                                     </div>
                                                     
@@ -354,6 +366,8 @@ function Navbar() {
                                                             key={inpRegisterDetail[2].id}
                                                             value={regisInpval[inpRegisterDetail[2].name]}
                                                             onChange={handleRegisChng}
+                                                            onInvalid={F => F.target.setCustomValidity('Không được bỏ trống')} 
+                                                            onInput={F => F.target.setCustomValidity('')} 
                                                         />
                                                     </div>
                                                 </div>
@@ -365,6 +379,8 @@ function Navbar() {
                                                             key={inpRegisterDetail[3].id}
                                                             value={regisInpval[inpRegisterDetail[3].name]}
                                                             onChange={handleRegisChng}
+                                                            onInvalid={F => F.target.setCustomValidity('Không được bỏ trống')} 
+                                                            onInput={F => F.target.setCustomValidity('')} 
                                                         />
                                                     </div>
                                                     
@@ -375,15 +391,11 @@ function Navbar() {
                                                             key={inpRegisterDetail[4].id}
                                                             value={regisInpval[inpRegisterDetail[4].name]}
                                                             onChange={handleRegisChng}
+                                                            onInvalid={F => F.target.setCustomValidity('Không được bỏ trống')} 
+                                                            onInput={F => F.target.setCustomValidity('')} 
                                                         />
                                                     </div>
                                                 </div>
-
-                                                {err && (
-                                                    <p style={{ color: 'red', marginBottom: '0px' }}>
-                                                        Xác thực thất bại. Tài khoản hoặc mật khẩu không đúng
-                                                    </p>
-                                                )}
                                                 <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "20px"}}>
                                                     <input
                                                         type="submit"
@@ -392,13 +404,6 @@ function Navbar() {
                                                         disabled={loading}
                                                         style={{width: "30%", marginTop: 0}}
                                                     />
-
-                                                    <p style={{cursor: "pointer", marginBottom: 0}} onClick={() => {
-                                                        closeRegisterModal()
-                                                        openLoginModal()
-                                                    }}>
-                                                            Đăng nhặp tại đây
-                                                    </p>
                                                 </div>
                                             </form>
                                         </div>

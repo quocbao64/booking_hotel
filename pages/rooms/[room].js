@@ -13,7 +13,6 @@ import axios from 'axios';
 import { addDays, format } from 'date-fns';
 import Table from 'rc-table';
 import { useContext, useState } from 'react';
-import Modal from "react-bootstrap/Modal";
 import { DateRange } from "react-date-range";
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
@@ -24,7 +23,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import Footer from '../../components/Footer/Footer';
 import Header from '../../components/Header/Header';
 import styleSearch from '../../components/Header/header.module.scss';
-import Input from '../../components/Input/Input';
 import Navbar from '../../components/Navbar/Navbar';
 import Newsletter from '../../components/Newsletter/Newsletter';
 import Reserve from '../../components/Reserve/Reserve';
@@ -32,7 +30,6 @@ import { Context } from '../../ContextApi/Context';
 import { Contexts } from '../../ContextUser/Contexts';
 import noPhoto from '../../images/no hotel.jpg';
 import style from '../../styles/hotelDetail.module.scss';
-import styles from '../../styles/login.module.scss';
 
 const hotelDetails = ({ rooms }) => {
     const { options } = useContext(Context);
@@ -103,15 +100,15 @@ const hotelDetails = ({ rooms }) => {
             type: 'email',
             placeholder: 'Email',
             required: true,
-            errMsg: 'Please provide a valid email address!',
+            errMsg: 'Vui lòng nhập đúng định dạng email!',
         },
         {
             id: 3,
             name: 'password',
             type: 'password',
-            placeholder: 'Password',
+            placeholder: 'Mật khẩu',
             required: true,
-            errMsg: 'This field is required!',
+            errMsg: 'Không được bỏ trống!',
         },
     ];
 
@@ -120,9 +117,9 @@ const hotelDetails = ({ rooms }) => {
             id: 2,
             name: 'username',
             type: 'text',
-            placeholder: 'Username',
+            placeholder: 'Tên người dùng',
             required: true,
-            errMsg: 'Please provide a valid email address!',
+            errMsg: 'Không được bỏ trống!',
         },
         {
             id: 3,
@@ -130,32 +127,32 @@ const hotelDetails = ({ rooms }) => {
             type: 'email',
             placeholder: 'Email',
             required: true,
-            errMsg: 'Please provide a valid email address!',
+            errMsg: 'Vui lòng nhập đúng định dạng email!',
         },
         {
             id: 4,
-            name: 'password',
-            type: 'password',
-            placeholder: 'Password',
+            name: 'phone_number',
+            type: 'text',
+            placeholder: 'Số điện thoại',
             required: true,
-            errMsg: 'This field is required!',
+            errMsg: 'Không được bỏ trống!',
         },
         {
             id: 5,
-            name: 'confirm_password',
+            name: 'password',
             type: 'password',
-            placeholder: 'Confirm Password',
+            placeholder: 'Mật khẩu',
             required: true,
-            errMsg: 'This field is required!',
+            errMsg: 'Không được bỏ trống!',
         },
         {
             id: 6,
-            name: 'phone_number',
-            type: 'text',
-            placeholder: 'Phone Number',
+            name: 'confirm_password',
+            type: 'password',
+            placeholder: 'Nhập lại mật khẩu',
             required: true,
-            errMsg: 'This field is required!',
-        },
+            errMsg: 'Không được bỏ trống!',
+        }
     ];
 
     const handleChng = (e) => {
@@ -184,48 +181,58 @@ const hotelDetails = ({ rooms }) => {
         e.preventDefault();
         dispatch({ type: 'LOGIN_START' });
 
-        try {
-            const res = await axios.post(
+            await axios.post(
                 'http://localhost:3000/login',
                 {
                     user_email: inpval['email'],
                     user_password: inpval['password']
                 }
-            );
-            dispatch({ type: 'LOGIN_SUCCESS', payload: res.data.data.user });
+            ).then(res => {
+            console.log(res);
+            if (res.data.data.code === 1) {
+                return Toast.fire({
+                    icon: 'error',
+                    title: res.data.data.msg,
+                    position: "top"
+                });
+            }
+            dispatch({ type: 'LOGIN_SUCCESS', payload: res.data.data });
 
             Toast.fire({
                 icon: 'success',
-                title: 'Log In Succesfully.',
+                title: 'Đăng nhập thành công',
+                position: "top"
             });
-        } catch (error) {
-            dispatch({ type: 'LOGIN_FAILURE' });
-            setErr(true);
-        }
+            window.location.reload()
+        }).catch(err => {
+            setErr(err.response.data.msg)
+            dispatch({type: 'LOGIN_FAILURE'})
+        })
     };
 
     const handleRegisSubmit = async e => {
         e.preventDefault();
 
-        try {
-            const res = await axios.post(
-                'http://localhost:3000/register',
-                {
-                    user_email: regisInpval['email'],
-                    user_password: regisInpval['password'],
-                    user_name: regisInpval['username'],
-                    confirm_password: regisInpval['confirm_password'],
-                    user_phone: regisInpval['phone_number'],
-                }
-            );
-
+        await axios.post(
+            'http://localhost:3000/register',
+            {
+                user_email: regisInpval['email'],
+                user_password: regisInpval['password'],
+                user_name: regisInpval['username'],
+                confirm_password: regisInpval['confirm_password'],
+                user_phone: regisInpval['phone_number'],
+            }
+        ).then(re => {
             Toast.fire({
                 icon: 'success',
-                title: 'Register Succesfully.',
+                title: 'Đăng ký thành công.',
             });
-        } catch (error) {
-            setErr(true);
-        }
+            closeRegisterModal()
+            openLoginModal()
+        }).catch(err => {
+            console.log(err);
+            setErr(err.response.data)
+        })
     }
 
     const handleToggle = () => {
@@ -299,15 +306,7 @@ const hotelDetails = ({ rooms }) => {
         }   
     }
 
-    const handleReverseSubmit = (e, count) => {
-        if (count === 0) {
-            e.preventDefault()
-            return Toast.fire({
-                icon: 'warning',
-                title: 'Bạn phải chọn phòng!',
-            });
-        }
-        localStorage.setItem("order", JSON.stringify(countChalet))
+    const handleReverseSubmit = (e) => {
         localStorage.setItem("rooms", JSON.stringify(rooms))
         localStorage.setItem('dates', JSON.stringify(dates))
     }
@@ -374,50 +373,12 @@ const hotelDetails = ({ rooms }) => {
             )
         },
         {
-            title: 'Chọn số lượng phòng',
-            dataIndex: 'chalet',
-            key: 'chalet',
-            width: 70,
-            render: (value) => {
-                const optionsChalet = Array.from({ length: value.quantity + 1 }, (_, index) => index);
-                return <select onChange={(e) => handleSelectChange(e, value.id)}>
-                        {optionsChalet.map(option => (
-                            <option key={option} value={option}>
-                            {option}
-                            </option>
-                        ))}
-                    </select>
-            }
-        },
-        {
             title: '',
             key: "info",
             width: 200,
             render: (value) => {
-                const count = countChalet.reduce((acc, obj) => acc + obj.quantity, 0);
-                const totalBill = 0;
-                countChalet.forEach(e => {
-                    if (e.quantity !== 0) {
-                        totalBill += parseInt(rooms?.room_price);
-                    } 
-                    else {
-                        totalBill -= parseInt(rooms?.room_price);
-                        count--;
-                    }
-                })
                 return <div style={{margin: "5px"}}>
-                    {count > 0 ? (
-                        <div>
-                            <span>Tổng tiền:</span>
-                            <br/>
-                            <span style={{fontSize: "20px", fontWeight: 700, lineHeight: "24px"}}>
-                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalBill)}
-                            </span>
-                            <br/>
-                            <span>cho {count} phòng</span>
-                        </div>
-                    ) : <div></div>}
-                    <a href='/invoice'><button className={style.reverse_button} onClick={(e) => handleReverseSubmit(e, count)}>Đặt phòng ngay</button></a>
+                    <a href='/invoice'><button className={style.reverse_button} onClick={(e) => handleReverseSubmit(e)}>Đặt phòng ngay</button></a>
                 </div>
             },
         },
@@ -563,146 +524,14 @@ const hotelDetails = ({ rooms }) => {
                             <button type="button" onClick={scrollToTarget}>
                                 Đặt phòng ngay
                             </button>
-                        ) : (
-                            <>
-                                <button type="button" onClick={openLoginModal}>
-                                    Đặt phòng ngay
-                                </button>
-                                <Modal show={isLoginModalOpen} onHide={closeLoginModal} fade={false}>
-                                    <Modal.Header closeButton>
-                                        <Modal.Title>User Login</Modal.Title>
-                                    </Modal.Header>
-                                    <Modal.Body>
-                                        <div className={styles.login_page_main}>
-                                            <div className={styles.signup_page_form}>
-                                                <form action="" onSubmit={handleSubmit}>
-                                                    {inpLoginDetail.map((inpLoginDetail) => (
-                                                        <div>
-                                                            <label style={{marginBottom: "6px", marginTop: "15px"}}>{inpLoginDetail['placeholder']}</label>
-                                                            <Input
-                                                                {...inpLoginDetail}
-                                                                key={inpLoginDetail.id}
-                                                                value={inpval[inpLoginDetail.name]}
-                                                                onChange={handleChng}
-                                                            />
-                                                        </div>
-                                                    ))}
-
-                                                    {err && (
-                                                        <p style={{ color: 'red', marginBottom: '0px' }}>
-                                                            Authentication failed!
-                                                        </p>
-                                                    )}
-                                                    <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "20px"}}>
-                                                        <input
-                                                            type="submit"
-                                                            value="Log In"
-                                                            className={styles.submit_btn}
-                                                            disabled={loading}
-                                                            style={{width: "30%", marginTop: 0}}
-                                                        />
-
-                                                        <p style={{cursor: "pointer", marginBottom: 0}} onClick={() => {
-                                                            closeLoginModal()
-                                                            openRegisterModal()
-                                                        }}>
-                                                                Register here..
-                                                        </p>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </Modal.Body>
-                                </Modal>
-
-                                <Modal show={isRegisterModalOpen} onHide={closeRegisterModal} fade={false}>
-                                    <Modal.Header closeButton>
-                                        <Modal.Title>User Register</Modal.Title>
-                                    </Modal.Header>
-                                    <Modal.Body>
-                                        <div className={styles.login_page_main}>
-                                            <div className={styles.signup_page_form}>
-                                                <form action="" onSubmit={handleRegisSubmit}>
-                                                    <div>
-                                                        <label style={{marginBottom: "6px", marginTop: "15px"}}>{inpRegisterDetail[1]['placeholder']}</label>
-                                                        <Input
-                                                            {...inpRegisterDetail[1]}
-                                                            key={inpRegisterDetail[1].id}
-                                                            value={regisInpval[inpRegisterDetail[1].name]}
-                                                            onChange={handleRegisChng}
-                                                        />
-                                                    </div>
-                                                    <div style={{display: "flex", justifyContent: "space-between"}}>
-                                                        <div style={{width: "49%"}}>
-                                                            <label style={{marginBottom: "6px", marginTop: "15px"}}>{inpRegisterDetail[0]['placeholder']}</label>
-                                                            <Input
-                                                                {...inpRegisterDetail[0]}
-                                                                key={inpRegisterDetail[0].id}
-                                                                value={regisInpval[inpRegisterDetail[0].name]}
-                                                                onChange={handleRegisChng}
-                                                            />
-                                                        </div>
-                                                        
-                                                        <div style={{width: "49%"}}>
-                                                            <label style={{marginBottom: "6px", marginTop: "15px"}}>{inpRegisterDetail[2]['placeholder']}</label>
-                                                            <Input
-                                                                {...inpRegisterDetail[2]}
-                                                                key={inpRegisterDetail[2].id}
-                                                                value={regisInpval[inpRegisterDetail[2].name]}
-                                                                onChange={handleRegisChng}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div style={{display: "flex", justifyContent: "space-between"}}>
-                                                        <div style={{width: "49%"}}>
-                                                            <label style={{marginBottom: "6px", marginTop: "15px"}}>{inpRegisterDetail[3]['placeholder']}</label>
-                                                            <Input
-                                                                {...inpRegisterDetail[3]}
-                                                                key={inpRegisterDetail[3].id}
-                                                                value={regisInpval[inpRegisterDetail[3].name]}
-                                                                onChange={handleRegisChng}
-                                                            />
-                                                        </div>
-                                                        
-                                                        <div style={{width: "49%"}}>
-                                                            <label style={{marginBottom: "6px", marginTop: "15px"}}>{inpRegisterDetail[4]['placeholder']}</label>
-                                                            <Input
-                                                                {...inpRegisterDetail[4]}
-                                                                key={inpRegisterDetail[4].id}
-                                                                value={regisInpval[inpRegisterDetail[4].name]}
-                                                                onChange={handleRegisChng}
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    {err && (
-                                                        <p style={{ color: 'red', marginBottom: '0px' }}>
-                                                            Authentication failed!
-                                                        </p>
-                                                    )}
-                                                    <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "20px"}}>
-                                                        <input
-                                                            type="submit"
-                                                            value="Log In"
-                                                            className={styles.submit_btn}
-                                                            disabled={loading}
-                                                            style={{width: "30%", marginTop: 0}}
-                                                        />
-
-                                                        <p style={{cursor: "pointer", marginBottom: 0}} onClick={() => {
-                                                            closeRegisterModal()
-                                                            openLoginModal()
-                                                        }}>
-                                                                Login here..
-                                                        </p>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </Modal.Body>
-                                </Modal>
-                            </>
-                        )}
+                        ) : <button type="button" onClick={() => Toast.fire({
+                            title: "Vui lòng đăng nhập",
+                            icon: "warning",
+                            timer: 3000,
+                            position: "top"
+                        })}>
+                                Đặt phòng ngay
+                            </button>}
                     </div>
                     
                 </div>

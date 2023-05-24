@@ -1,6 +1,8 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import { MdLocalHotel } from 'react-icons/md';
+import { BsFillEnvelopeFill, BsFillGeoAltFill, BsFillTelephoneFill } from "react-icons/bs";
+import logo from "../../images/logo.png";
 import FooterItem from '../FooterItem/FooterItem';
 import style from './footer.module.scss';
 
@@ -11,35 +13,32 @@ const footer_detail1 = [
         to: '/',
     },
     {
-        id: 3,
+        id: 2,
         link: 'Danh sách phòng',
         to: '/rooms',
     },
-];
-
-const footer_detail2 = [
-    {
-        id: 1,
-        link: 'Về chúng tôi',
-        to: '/about',
-    },
     {
         id: 3,
-        link: 'Liên hệ',
-        to: '/contact',
+        link: 'Về chúng tôi',
+        to: '/about',
     },
 ];
 
 const footer_detail3 = [
     {
         id: 1,
-        link: 'Liên hệ',
-        to: '/contact',
+        link: 'Số 32 Lương Văn Can, Quận Hoàn Kiếm, Hà Nội',
+        icon: <BsFillGeoAltFill />
+    },
+    {
+        id: 2,
+        link: '0345678912',
+        icon: <BsFillTelephoneFill />
     },
     {
         id: 3,
-        link: 'Về chúng tôi',
-        to: '/about',
+        link: 'room@gmail.com',
+        icon: <BsFillEnvelopeFill />
     },
 ];
 
@@ -49,19 +48,15 @@ function Footer() {
             <div className={style.footer_main}>
                 <div className={style.footer_left}>
                     <FooterItem footerDetail={footer_detail1} footerHeader="Liên kết nhanh" />
-                    <FooterItem footerDetail={footer_detail2} footerHeader="Về chúng tôi" />
                     <FooterItem footerDetail={footer_detail3} footerHeader="Liên hệ" />
                 </div>
 
                 <div className={style.footer_right}>
                     <Link href="/">
-                        <div className={style.nav_brand}>
-                            <MdLocalHotel style={{ marginRight: '5px' }} className={style.brand} />{' '}
-                            Rooms
-                        </div>
+                        <Image width={200} height={80} src={logo} objectFit='contain' />
                     </Link>
                     <p>
-                    Tìm kiếm các phòng và nhà trọ tuyệt vời cho chuyến đi của bạn. Làm cho hành trình của bạn thêm thú vị và đáng nhớ hơn.
+                    Tìm kiếm các phòng tuyệt vời cho chuyến đi của bạn. Làm cho hành trình của bạn thêm thú vị và đáng nhớ hơn.
                     </p>
                 </div>
             </div>

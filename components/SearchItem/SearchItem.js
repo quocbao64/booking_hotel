@@ -10,7 +10,7 @@ function SearchItem({ results }) {
     console.log(results);
     return (
         <div className={style.search_item}>
-            <Link href={`/hotels/${results?.hotel_id}`}>
+            <Link href={`/rooms/${results?.room_id}`}>
                 <div className={style.search_item_img} style={{ position: 'relative' }}>
                     <Image src={imgs.length > 0 ? imgs[0] : noPhoto} height={260} width={270} layout="responsive" alt="Hotels"  />
                 </div>
