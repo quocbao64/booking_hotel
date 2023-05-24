@@ -3,7 +3,7 @@ import React, { useReducer } from 'react';
 import Reducer from './Reducer';
 
 const initial_state = {
-    city: undefined,
+    quantity: undefined,
     dates: [
         {
             startDate: new Date(),
@@ -11,11 +11,7 @@ const initial_state = {
             key: 'selection',
         },
     ],
-    options: {
-        adult: 1,
-        children: 0,
-        rooms: 1,
-    },
+    rate: undefined,
 };
 
 export const Context = React.createContext(initial_state);
@@ -26,9 +22,9 @@ export function ContextProvider({ children }) {
     return (
         <Context.Provider
             value={{
-                city: state.city,
+                quantity: state.quantity,
                 dates: state.dates,
-                options: state.options,
+                rate: state.rate,
                 dispatch,
             }}
         >

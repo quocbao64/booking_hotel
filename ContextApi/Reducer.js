@@ -4,7 +4,7 @@ export default function Reducer(state, action) {
             return action.payload;
         case 'RESET_SEARCH':
             return {
-                city: undefined,
+                quantity: undefined,
                 dates: [
                     {
                         startDate: new Date(),
@@ -12,11 +12,7 @@ export default function Reducer(state, action) {
                         key: 'selection',
                     },
                 ],
-                options: {
-                    adult: 1,
-                    children: 0,
-                    rooms: 1,
-                },
+                rate: undefined,
             };
         default:
             return state;
